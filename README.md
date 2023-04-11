@@ -1,0 +1,1 @@
+A tool for predicting the winner of an upcoming NBA game. Works up to 74% of the time for some teams, as low as 50% for other teams.
