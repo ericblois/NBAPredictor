@@ -2,8 +2,8 @@ import pandas as pd
 import time
 from Requests import *
 
-
-def mp_to_sec(mp: str):
+# Converts a string of minutes and seconds to seconds
+def mp_to_sec(mp: str) -> int:
     mp = mp.split(':')
     try:
         return int(mp[0]) * 60 + int(mp[1])
