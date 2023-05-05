@@ -35,6 +35,21 @@ def load_game_logs():
             schedule.to_csv(f'game_logs/{abbrev}_2023.csv', index=False)
         GAME_LOGS[abbrev] = schedule
 
+def load_game_log(team: str):
+    # Check if game logs dir exists
+    if not os.path.isdir('game_logs'):
+        update_game_logs()
+    # Get all games from 2022-2023 season
+    print("\033[37m" + f"Loading {team} schedule for 2022-2023 season...")
+    try:
+        schedule = pd.read_csv(f'game_logs/{team}_2023.csv')
+    except:
+        print("\033[33m" + f"Could not load {team} schedule for 2022-2023 season, retrieving from web...")
+        schedule = retrieve_team_schedule(team, 2023)
+        # Save each game to a csv file
+        schedule.to_csv(f'game_logs/{team}_2023.csv', index=False)
+    GAME_LOGS[team] = schedule
+
 def update_adv_box_scores():
     # Check if game logs dir exists
     if not os.path.isdir('adv_box_scores'):
@@ -86,6 +101,19 @@ def load_adv_box_scores():
         frames = {filename[:10]: pd.read_csv(f'adv_box_scores/{abbrev}/{filename}') for filename in filenames}
         ADV_BOX_SCORES[abbrev] = frames
 
+def load_adv_box_score(team: str):
+    # Check if game logs dir exists
+    if not os.path.isdir('adv_box_scores'):
+        update_adv_box_scores()
+    # Get all games from 2022-2023 season
+    print("\033[37m" + f"Loading {team} advanced box scores for 2022-2023 season...")
+    # Check if team dir exists
+    if not os.path.isdir(f'adv_box_scores/{team}'):
+        update_adv_box_scores()
+    filenames = os.listdir(f'adv_box_scores/{team}')
+    frames = {filename[:10]: pd.read_csv(f'adv_box_scores/{team}/{filename}') for filename in filenames}
+    ADV_BOX_SCORES[team] = frames
+
 def update_all():
     update_game_logs()
     update_adv_box_scores()
@@ -96,18 +124,18 @@ def load_all():
 
 # Get advanced box score for a team (ex. "ATL", "2021", "10", "19")
 def get_advanced_box_score(abbrev: str, year: str, month: str, day: str) -> pd.DataFrame:
-    if len(ADV_BOX_SCORES) <= 0:
-        load_all()
+    print(f"Loading {abbrev} advanced box scores for 2022-2023 season...")
     try:
         return ADV_BOX_SCORES[abbrev][f'{year}_{month}_{day}']
     except:
-        raise Exception(f'No game available for {abbrev} on {year}-{month}-{day}')
+        load_adv_box_score(abbrev)
+        return ADV_BOX_SCORES[abbrev][f'{year}_{month}_{day}']
 
 # Get team schedule for a team
 def get_team_schedule(abbrev: str) -> pd.DataFrame:
-    if len(GAME_LOGS) <= 0:
-        load_all()
+    print(f"Loading {abbrev} game logs for 2022-2023 season...")
     try:
         return GAME_LOGS[abbrev]
     except:
-        raise Exception(f'No schedule available for {abbrev}')
+        load_game_log(abbrev)
+        return GAME_LOGS[abbrev]

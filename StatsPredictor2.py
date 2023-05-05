@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import time
 
@@ -127,8 +128,6 @@ def get_stats_model_input(team: str, date: str, n: int):
     return all_stats
 
 
-#train_score_model()
-
 def predict_stats_from_roster(team: str, date: str):
     schedule = get_team_schedule(team)
     try:
@@ -157,8 +156,6 @@ def predict_stats_from_roster(team: str, date: str):
     w_stats /= roster_diff_total
     # Add roster differences to schedule
     return w_stats
-
-#predict_stats_from_roster('TOR', '2023-03-02')
 
 score_model = train_score_model()
 stats_model = train_stats_model(STATS_N)
